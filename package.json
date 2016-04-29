@@ -1,0 +1,19 @@
+{
+  "name": "transitbackend",
+  "version": "0.0.1",
+  "description": "Backend for the transit tracker Web and App",
+  "main": "app.js",
+  "dependencies": {
+    "body-parser": "^1.13.2",
+    "cors": "^2.7.1",
+    "express": "^4.13.1",
+    "jasmine-node": "^1.14.5",
+    "mysql": "^2.7.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
