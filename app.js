@@ -6,7 +6,7 @@ var querys = require('./includes/query');
 var bodyParser = require('body-parser');
 
 
-app.set('port', (process.env.PORT || 81));
+app.set('port', (process.env.PORT || process.argv[2] || 9032));
 app.set('json spaces', 2); // output json with 2 spaces
 
 app.use(bodyParser.json()); // to support JSON-encoded bodies
