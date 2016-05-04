@@ -69,6 +69,8 @@ app.post('/channel/', function (req, res) {
 
     console.log('connected');
     
+    console.log(req.body);
+    
     var user_params = {
         channel: req.body.channel,
         user_id: req.body.user_id
