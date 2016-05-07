@@ -4,6 +4,12 @@ var cors = require('cors');
 var mysql = require('mysql');
 var querys = require('./includes/query');
 var bodyParser = require('body-parser');
+var GCM = require('gcm').GCM;
+
+
+
+var apiKey = 'AIzaSyAUFfuQGGhGTbKfFvRI4HLM81kXT6tAx0c';
+var gcm = new GCM(apiKey);
 
 
 app.set('port', (process.env.PORT || process.argv[2] || 9032));
@@ -29,14 +35,21 @@ connection = mysql.createPool('mysql://ba232d7ca94965:846f4c41@us-cdbr-iron-east
 //Creates New User
 app.post('/create/', function (req, res) {
 
+    
+    console.log(req.body);
+    
     user_params = {
         name: req.body.user_name,
         dest: req.body.user_dest,
         source: req.body.user_source
     }
 
+    
+    console.log(user_params);
+    
     var qry = strparser(querys.new_user, user_params);
 
+    console.log(qry);
 
     connection.query(qry, function (err, rows, fields) {
 
@@ -141,18 +154,29 @@ app.post('/ping', function (req,res) {
     
     if(req.body.id) {
         req.body.id = parseInt((req.body.id.toString()).replace('#',''));
-        var qry = strparser(query.fetch_channel,req.body);
+        var qry = strparser(querys.fetch_channel,req.body);
         
         connection.query(qry, function (err,rows,fields){
             
             if(err){
-                
+                console.log(err);
                 res.json({error:1});
-                
+                return;
             }
             
             console.log(rows[0].user_channel);
-            
+            var message = {
+    registration_id: rows[0].user_channel // required
+  
+};
+       
+            gcm.send(message, function(err, messageId){
+    if (err) {
+        console.log("Something has gone wrong!");
+    } else {
+        console.log("Sent with message ID: ", messageId);
+    }
+});
             
         });
         
