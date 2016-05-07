@@ -35,18 +35,18 @@ connection = mysql.createPool('mysql://ba232d7ca94965:846f4c41@us-cdbr-iron-east
 //Creates New User
 app.post('/create/', function (req, res) {
 
-    
+
     console.log(req.body);
-    
+
     user_params = {
         name: req.body.user_name,
         dest: req.body.user_dest,
         source: req.body.user_source
     }
 
-    
+
     console.log(user_params);
-    
+
     var qry = strparser(querys.new_user, user_params);
 
     console.log(qry);
@@ -81,9 +81,9 @@ app.post('/create/', function (req, res) {
 app.post('/channel/', function (req, res) {
 
     console.log('connected');
-    
+
     console.log(req.body);
-    
+
     var user_params = {
         channel: req.body.channel,
         user_id: req.body.user_id
@@ -139,7 +139,7 @@ app.get('/getairport/:search', function (req, res) {
             });
             return;
         }
-        
+
         res.json(rows);
 
 
@@ -150,41 +150,64 @@ app.get('/getairport/:search', function (req, res) {
 
 
 
-app.post('/ping', function (req,res) {
-    
-    if(req.body.id) {
-        req.body.id = parseInt((req.body.id.toString()).replace('#',''));
-        var qry = strparser(querys.fetch_channel,req.body);
-        
-        connection.query(qry, function (err,rows,fields){
-            
-            if(err){
+app.post('/ping', function (req, res) {
+
+    if (req.body.id) {
+        console.log(req.body.id);
+        req.body.id = ((req.body.id.toString()).replace('#', ''));
+        var qry = strparser(querys.fetch_channel, req.body);
+
+        connection.query(qry, function (err, rows, fields) {
+
+            if (err) {
                 console.log(err);
-                res.json({error:1});
+                console.log(qry);
+                res.json({
+                    error: 1
+                });
                 return;
             }
-            
+
+            if (rows.length < 1) {
+
+                res.json({
+                    error: 2
+                });
+                return
+            }
+
             console.log(rows[0].user_channel);
             var message = {
-    registration_id: rows[0].user_channel // required
-  
-};
-       
-            gcm.send(message, function(err, messageId){
-    if (err) {
-        console.log("Something has gone wrong!");
-    } else {
-        console.log("Sent with message ID: ", messageId);
-    }
-});
-            
+                registration_id: rows[0].user_channel, // required
+                priority: "high",
+                delay_while_idle: false,
+                data: {
+                    hello: 'world'
+                },
+                notification: {
+                    title: 'bro'
+                },
+                time_to_live:0
+            };
+
+            gcm.send(message, function (err, messageId) {
+                if (err) {
+                    console.log("Something has gone wrong!");
+                } else {
+                    console.log("Sent with message ID: ", messageId);
+                    res.json({
+                        success: 1
+                    });
+                }
+            });
+
         });
-        
-        
+
+
     }
-    
-    
-    
+
+
+
 });
 
 
@@ -209,7 +232,7 @@ app.get('/getairport/', function (req, res) {
             });
             return;
         }
-        
+
         res.json(rows);
 
 
